@@ -1,5 +1,6 @@
 from calendar import month
 import os
+from nbformat import read
 import pandas as pd
 import numpy as np
 
@@ -8,16 +9,27 @@ import numpy as np
 #read binary files
 def readBytes(filename):
     with open(filename, 'rb') as file:
-            b = file.read()       
+        b = file.read()       
     return b
 
 #reading text files
-def readTxtToDF(filename):
+def readLCR(filename):
     with open(filename, 'r') as file:
         data = ' '.join(file.read().split())
     temparray = np.reshape((np.array(data.split())), (-1, 10)) 
-    file = pd.DataFrame(temparray, columns=LCRvalues)
+    file = pd.DataFrame(temparray)
     return file
+
+def readTemp(filename):
+    with open(filename, 'rb') as file:
+        data = file.read()
+    return data   
+
+def readLAI (filename):
+    with open(filename, 'r') as file:
+        data = np.array(file.read().split('\n'))
+    return pd.DataFrame(data)
+
 
 
 months = {"JAN":1, "FEB":2, "MAR":3, "APR":4, "MAY":5, "JUN":6, "JUL":7, "AUG":8, "SEP":9, "OCT":10, "NOV":11, "DEC":12}
@@ -34,14 +46,20 @@ LAI24_path = os.path.join(current_path, 'La_i_24', '01.06.2022 13.59.12. 6.25Hz.
 Press_path = os.path.join(current_path, 'log.log')
 
 #retriving files
+#data reading and cleaning up
+emission_data = pd.DataFrame(np.array(np.fromfile(emission_path, dtype='uint16')))
 
-#emission data reading and cleaning up
-lcr_data = readTxtToDF(lcr_path)
 
+lcr_data = readLCR(lcr_path)
+lcr_data.columns = LCRvalues
+lcr_data.replace({"month":months})
 
 print(lcr_data)
 
-#LCR_data
-#Fluke_data
-#LAI24_data
+Fluke_data = readTemp(Fluke_path)
+
+LAI24_data = open(LAI24_path).read()
+
+LAI24_data = readLAI(LAI24_path)
+
 #Press_data
