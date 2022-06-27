@@ -18,22 +18,45 @@ def readLCR(filename):
         data = ' '.join(file.read().split())
     temparray = np.reshape((np.array(data.split())), (-1, 10)) 
     file = pd.DataFrame(temparray)
+    file = file.drop(file.columns[5], axis=1)
+    file.columns = LCRvalues
+    file["month"] = file["month"].replace(months)
+    file["datetime"] = pd.to_datetime(file["year"]+' '+file["month"]+' '+file["day"]+' '+file["time"])
+    file = file.drop(columns = ["month", "day", "year"])
+    file.head()
     return file
 
 def readTemp(filename):
     with open(filename, 'rb') as file:
-        data = file.read()
-    return data   
+        fdata = file.read().decode('unicode_escape').replace('\r', '').split('\n')
+    fcolumns = fdata[9].split(';')
+    fdata = fdata[10:]
+    data = list()
+    for x in fdata:
+        if not x:
+            break
+        temp = x.split(';')
+        data.append(temp)
+    return pd.DataFrame(np.array(data))  
 
-def readLAI (filename):
+def readLAI(filename):
     with open(filename, 'r') as file:
-        data = np.array(file.read().split('\n'))
-    return pd.DataFrame(data)
+        fdata = file.read().split('\n')
+    fcolumns = ['var1', 'var2', 'var3', 'var4'] 
+    temp_list = list()
+    for x in fdata:
+        temp = x.split('\t')
+        temp_list.append(temp)
+    return pd.DataFrame(temp_list)
 
-
+def readPress(filename):
+    with open(filename, 'r') as file:
+        fdata = file.read()
+    data = fdata.split('/n')    
+    return data
 
 months = {"JAN":1, "FEB":2, "MAR":3, "APR":4, "MAY":5, "JUN":6, "JUL":7, "AUG":8, "SEP":9, "OCT":10, "NOV":11, "DEC":12}
-LCRvalues = ["var1", "var2", "var3", "var4", "var5",  "weekday", "month", "day", "time", "year"]
+LCRvalues = ["var1", "var2", "var3", "var4", "var5", "month", "day", "time", "year"]
 
 
 current_path = os.path.join((os.path.dirname(__file__)), 'Исходные данные', 'Пресс' )
@@ -51,15 +74,12 @@ emission_data = pd.DataFrame(np.array(np.fromfile(emission_path, dtype='uint16')
 
 
 lcr_data = readLCR(lcr_path)
-lcr_data.columns = LCRvalues
-lcr_data.replace({"month":months})
 
 print(lcr_data)
 
-Fluke_data = readTemp(Fluke_path)
-
-LAI24_data = open(LAI24_path).read()
+fluke_data = readTemp(Fluke_path)
 
 LAI24_data = readLAI(LAI24_path)
 
-#Press_data
+Press_data = readPress(Press_path)
+
