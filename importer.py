@@ -3,6 +3,7 @@ import os
 from nbformat import read
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 #functions to work with diffirerent types of files
 
@@ -55,6 +56,7 @@ def readTemp(filename):
         tempdata = file.read().decode('unicode_escape').replace('\r', '')
     fdata =  tempdata.replace(' °C', '').split('\n')
     fcolumns = fdata[9].split(';')
+    fcolumns[1],fcolumns[2] = fcolumns[2], fcolumns[1]
     fdata = fdata[10:]
     data = []
     for x in fdata:
@@ -62,7 +64,9 @@ def readTemp(filename):
             break
         part = x.split(';')
         data.append(part)
-    return pd.DataFrame(np.array(data), columns = fcolumns)
+    df = pd.DataFrame(np.array(data[:-1]), columns = fcolumns)
+    df.iloc[:, [1]],df.iloc[:, [2]] = df.iloc[:, [2]], df.iloc[: ,[1]]
+    return df
 
 def readLAI(filename):
     with open(filename, 'r') as file:
@@ -115,9 +119,54 @@ emission_data = pd.DataFrame(np.array(np.fromfile(emission_path, dtype='uint16')
 
 
 lcr_data = readLCR(lcr_path)
-lcr_data.head()
+
+#fig, ax = plt.subplots()
+#ax.plot(lcr_data.index, lcr_data['var1'], color = 'red')
+#ax2 = ax.twinx()
+#ax2.plot(lcr_data.index, lcr_data['var2'], color = 'blue')
+#plt.show()
+
 
 fluke_data = readTemp(Fluke_path)
+
+def optimTemp (df, col):
+
+  samp_col = [1,2]
+  max_col = [4,5]
+  min_col = [7,8]
+  findf = list()
+
+  if col == 'Sample':
+    n = samp_col
+  elif col == 'Max':
+    n = max_col
+  else:
+    n = min_col
+
+  for x in range(len(df.index)):
+    temp = df.iloc[x, n[1]]
+    if x==0 or x ==len(df.index):
+      findf.append(list(df.iloc[x, n]))
+    else:
+      if temp != df.iloc[x-1, n[1]] or temp!= df.iloc[x+1, n[1]]:
+        findf.append(list(df.iloc[x, n]))
+
+  d = pd.DataFrame(findf, columns=(df.columns[n[0]], df.columns[n[1]]))
+  return d
+
+
+samples = optimTemp(fluke_data, 'Sample')
+maxes = optimTemp(fluke_data, 'Max')
+#mins = optimTemp(fluke_data, 'Min')
+
+fig, ax = plt.subplots()
+
+ax.plot(samples['Start Time'], samples['Sample'], color = 'red')
+ax2 = ax.twinx()
+ax2.plot(maxes['Max time'], maxes['Max'], color = 'blue')
+#ax3 = ax.twinx()
+#ax3.plot(newdf['Start time'], newdf['Min'], color = 'green')
+plt.show()
 
 LAI24_data = readLAI(LAI24_path)
 
