@@ -159,14 +159,15 @@ def optimTemp (df, col):
 
 
 samples = optimTemp(fluke_data, 'Sample')
-maxes = optimTemp(fluke_data, 'Max')
+#maxes = optimTemp(fluke_data, 'Max')
 #mins = optimTemp(fluke_data, 'Min')
 
 fig, ax = plt.subplots()
 
 ax.plot(samples['Start Time'], samples['Sample'], color = 'red')
-ax2 = ax.twinx()
-ax2.plot(maxes['Max time'], maxes['Max'], color = 'blue')
+ax.locator_params( nbins=8)
+#ax2 = ax.twinx()
+#ax2.plot(maxes['Max time'], maxes['Max'], color = 'blue')
 #ax3 = ax.twinx()
 #ax3.plot(newdf['Start time'], newdf['Min'], color = 'green')
 plt.show()
