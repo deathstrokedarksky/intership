@@ -3,41 +3,34 @@ import os
 from nbformat import read
 import pandas as pd
 import numpy as np
-from datetime import datetime
+import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from pytest import TempdirFactory
+
 
 
 #functions to work with diffirerent types of files
 
-#read binary files
-def readBytes(filename):
-    with open(filename, 'rb') as file:
-        b = file.read()       
-    return b
-
+#read emiission files
 def readEmission(filename):
-    dataframe = pd.DataFrame(np.reshape( (np.array(np.fromfile(filename, dtype='uint16'))), (-1,6144)))
-    dataframe.drop(dataframe.columns[3072:],axis=1)
-    dataframe['time'] = dataframe.iloc[:,3] + dataframe.iloc[:,4] * 65536
+  dataframe = pd.DataFrame(np.reshape( (np.array(np.fromfile(filename, dtype='uint16'))), (-1,6144)))
+  dataframe.drop(dataframe.columns[3072:],axis=1)
 
-    dataframe['temp'] = dataframe.iloc[:,8] * 1000000 + dataframe.iloc[:,9] * 1000 + dataframe.iloc[:,10]
-    dataframe['date'] = 0
-    delta_time = dataframe.iloc[0, -3]
-    begin_date = dataframe.iloc[0, -2]
+  time = list(dataframe.iloc[:,3] + dataframe.iloc[:,4] * 65536)
+  
+  delta_time = time[0]
+  begin_date = dataframe.iloc[0,8] * 1000000 + dataframe.iloc[0,9] * 1000 + dataframe.iloc[0,10]
 
-    for d in range(len(dataframe['time'])):
-      dataframe.iloc[d, -3] = (dataframe.iloc[d, -3]-delta_time)
+  final_list = list()
+  for d in range(len(dataframe)):
+    final_list.append(datetime.datetime.fromtimestamp(((time[d] -delta_time)/1000 + begin_date)).strftime('%d.%m.%Y %H:%M:%S.%f'))
+  
+  dataframe['datetime'] = final_list
 
-    for d in range(len(dataframe['time'])):
-      dataframe.iloc[d, -1] = (dataframe.iloc[d, -3]/1000 + begin_date)    
-    
-    for d in range(len(dataframe['date'])):
-      dataframe.iloc[d, -1] = datetime.fromtimestamp(dataframe.iloc[d, -1])
-
-    dataframe = dataframe.drop(dataframe.iloc[:, :12], axis=1)
-    dataframe = dataframe.drop(dataframe[['temp', 'time']], axis=1)
-    return dataframe
+  dataframe = dataframe.drop(dataframe.iloc[:, :12], axis=1)
+ 
+  return dataframe
 
 def readLCR(filename):
     with open(filename, 'r') as file:
@@ -49,7 +42,7 @@ def readLCR(filename):
     file = file.iloc[:, [0, 4, 6, 7, 8, 9]]
 
     file.iloc[:, 2] = file.iloc[:, 2].replace(months)
-    file['datetime'] = pd.to_datetime(file.iloc[:, 5]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, 3]+' '+ file.iloc[:, 4])
+    file['datetime'] = pd.to_datetime(file.iloc[:, 3]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, -1]+' '+ file.iloc[:, 4])
     file = file.iloc[:, [0,1,-1]]
     file.columns=['var1', 'var2', 'datetime']
     return file
@@ -71,11 +64,37 @@ def readTemp(filename):
     df.iloc[:, [1]],df.iloc[:, [2]] = df.iloc[:, [2]], df.iloc[: ,[1]]
     return df
 
+def optimTemp (df, col):
+
+  samp_col = [1,2]
+  max_col = [4,5]
+  min_col = [7,8]
+  findf = list()
+
+  if col == 'Sample':
+    n = samp_col
+  elif col == 'Max':
+    n = max_col
+  else:
+    n = min_col
+
+  for x in range(len(df.index)):
+    temp = df.iloc[x, n[1]]
+    if x==0 or x ==len(df.index):
+      findf.append(list(df.iloc[x, n]))
+    else:
+      if temp != df.iloc[x-1, n[1]] or temp!= df.iloc[x+1, n[1]]:
+        findf.append(list(df.iloc[x, n]))
+
+  d = pd.DataFrame(findf, columns=(df.columns[n[0]], df.columns[n[1]]))
+  return d
+
 def readLAI(filename):
     with open(filename, 'r') as file:
         fdata = file.read().split('\n') 
     temp_list = list()
     for x in fdata:
+      if x:
         temp = x.split('\t')
         temp_list.append(temp[:-1])
     frame = pd.DataFrame(temp_list, columns = ['var1', 'var2', 'var3'] )
@@ -104,6 +123,31 @@ def readPress(filename):
     return data
 #steps and frequency
 
+def readSiglent(filename):
+  with open(filename, 'r') as file:
+    tempdata = file.read().split('\n')
+
+  check = False
+  
+  date_data = list()
+  on_data = list()
+  tempd = str()
+  tempo = str()
+  
+  for x in range(len(tempdata)):
+    dt_data = tempdata[x].split(' ')
+    if tempdata[x][-2:]=='on':
+      tempd = (dt_data[0] + ' ' + dt_data[1])
+    if tempdata[x][-2:]=='ff':
+      if on_data == [] and not tempd:
+        continue
+      else:
+        date_data.extend([tempd, (dt_data[0] + ' ' + dt_data[1])])
+        on_data.extend(['On', 'Off'])
+    
+  return pd.DataFrame({'datetime': date_data, 'Power':on_data})
+  
+
 months = {"JAN":1, "FEB":2, "MAR":3, "APR":4, "MAY":5, "JUN":6, "JUL":7, "AUG":8, "SEP":9, "OCT":10, "NOV":11, "DEC":12}
 LCRvalues = ["var1", "var2", "var3", "var4", "var5", "month", "day", "time", "year"]
 
@@ -115,11 +159,11 @@ lcr_path = os.path.join(current_path, 'AKTAKOM', 'AM3001-100.txt')
 Fluke_path =os.path.join(current_path, 'Temperature 01.06.22.csv')
 LAI24_path = os.path.join(current_path, 'La_i_24', '01.06.2022 13.59.12. 6.25Hz. Channels = 4.txt')
 Press_path = os.path.join(current_path, 'log.log')
+Siglent_path = os.path.join(current_path, 'Siglent', 'log.txt')
 
 #retriving files
 #data reading and cleaning up
-emission_data = pd.DataFrame(np.array(np.fromfile(emission_path, dtype='uint16')))
-
+emission_data = readEmission(emission_path)
 
 lcr_data = readLCR(lcr_path)
 
@@ -132,42 +176,17 @@ lcr_data = readLCR(lcr_path)
 
 fluke_data = readTemp(Fluke_path)
 
-def optimTemp (df, col):
-
-  samp_col = [1,2]
-  max_col = [4,5]
-  min_col = [7,8]
-  findf = list()
-
-  if col == 'Sample':
-    n = samp_col
-  elif col == 'Max':
-    n = max_col
-  else:
-    n = min_col
-
-  for x in range(len(df.index)):
-    temp = df.iloc[x, n[1]]
-    if x==0 or x ==len(df.index):
-      findf.append(list(df.iloc[x, n]))
-    else:
-      if temp != df.iloc[x-1, n[1]] or temp!= df.iloc[x+1, n[1]]:
-        findf.append(list(df.iloc[x, n]))
-
-  d = pd.DataFrame(findf, columns=(df.columns[n[0]], df.columns[n[1]]))
-  return d
-
 
 samples = optimTemp(fluke_data, 'Sample')
-#maxes = optimTemp(fluke_data, 'Max')
+maxes = optimTemp(fluke_data, 'Max')
 #mins = optimTemp(fluke_data, 'Min')
+
 
 fig, ax = plt.subplots()
 
-ax.plot(samples['Start Time'], samples['Sample'], color = 'red')
-ax.locator_params( nbins=8)
-#ax2 = ax.twinx()
-#ax2.plot(maxes['Max time'], maxes['Max'], color = 'blue')
+ax.plot(samples.iloc[:, 0], samples.iloc[:,1], color = 'red')
+ax2 = ax.twinx()
+ax2.plot(maxes.iloc[:,0], maxes.iloc[:,1], color = 'blue')
 #ax3 = ax.twinx()
 #ax3.plot(newdf['Start time'], newdf['Min'], color = 'green')
 plt.show()
@@ -175,3 +194,5 @@ plt.show()
 LAI24_data = readLAI(LAI24_path)
 
 Press_data = readPress(Press_path)
+
+Siglent_data = readSiglent(Siglent_path)
