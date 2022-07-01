@@ -185,7 +185,7 @@ maxes = optimTemp(fluke_data, 'Max')
 fig, ax = plt.subplots()
 
 ax.plot(samples.iloc[:, 0], samples.iloc[:,1], color = 'red')
-ax2 = ax.twinx()
+ax2 = ax.twiny()
 ax2.plot(maxes.iloc[:,0], maxes.iloc[:,1], color = 'blue')
 #ax3 = ax.twinx()
 #ax3.plot(newdf['Start time'], newdf['Min'], color = 'green')
