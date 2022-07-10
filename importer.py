@@ -41,10 +41,12 @@ def readLCR(filename):
     file = file.iloc[:, [0, 4, 6, 7, 8, 9]]
 
     file.iloc[:, 2] = file.iloc[:, 2].replace(months)
-    file['datetime'] = file.iloc[:, 5]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, 3]+' '+ file.iloc[:, 4]
+    
+    file['datetime'] = file.iloc[:, 5]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, 3]+' '+ file.iloc[:, 4]+'.0'
     file = file.iloc[:, [0,1,-1]]
     file.columns=['var1', 'var2', 'datetime']
-    file['datetime'] = pd.to_datetime(file['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
+    print(file)
+    file['datetime'] = pd.to_datetime(file['datetime'], format='%Y %m %d %H:%M:%S.%f')
     return file
 
 def readTemp(filename):
@@ -176,8 +178,8 @@ Siglent_path = os.path.join(current_path, 'Siglent', 'log.txt')
 #data reading and cleaning up
 
 emission_data = readEmission(emission_path)
-#lcr_data = readLCR(lcr_path)
-#fluke_data = readTemp(Fluke_path)
+lcr_data = readLCR(lcr_path)
+fluke_data = readTemp(Fluke_path)
 #samples = optimTemp(fluke_data, 'Sample')
 #LAI24_data = readLAI(LAI24_path)
 #Press_data = readPress(Press_path)
@@ -186,18 +188,43 @@ emission_data = readEmission(emission_path)
 #graphs section
 #vars
  
-fig = plt.figure(figsize=(13,6))
-ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+def draw_emi():
+  fig = plt.figure(figsize=(13,6))
+  ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
 
 
-x_e = pd.to_datetime(emission_data['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
-y_e = emission_data['step']
+  x_e = pd.to_datetime(emission_data['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
+  y_e = emission_data['step']
 
-ax.plot(x_e, y_e, color='r')
-ax.xaxis.set_major_locator(MaxNLocator(10))
+  ax.plot(x_e, y_e, color='r')
+  ax.xaxis.set_major_locator(MaxNLocator(10))
 
-ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  fig.autofmt_xdate()
+  plt.show()
+
+fig = plt.figure(figsize=(18,10))
+ax1 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+
+
+x_lcr = lcr_data['datetime']
+y_lcr1 = lcr_data['var1']
+y_lcr2 = lcr_data['var2']
+
+ax1.plot(x_lcr, y_lcr1, color='r')
+ax1.xaxis.set_major_locator(MaxNLocator(10))
+ax1.yaxis.set_major_locator(MaxNLocator(10))
+ax1.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+
+ax2 = ax1.twinx()
+ax2.plot(x_lcr, y_lcr2, color='b')
+
+ax2.yaxis.set_major_locator(MaxNLocator(10))
+
+
 fig.autofmt_xdate()
 
+#plt.get_current_fig_manager().window.showMaximized()
 plt.show()
+
 
