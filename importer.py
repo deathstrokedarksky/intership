@@ -1,12 +1,10 @@
-from calendar import month
 import os
-from nbformat import read
 import pandas as pd
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from pytest import TempdirFactory
+from matplotlib.ticker import MaxNLocator
 
 
 
@@ -26,10 +24,11 @@ def readEmission(filename):
   for d in range(len(dataframe)):
     final_list.append(datetime.datetime.fromtimestamp(((time[d] -delta_time)/1000 + begin_date)).strftime('%d.%m.%Y %H:%M:%S.%f'))
   
-  dataframe['datetime'] = final_list
+  dataframe['datetime'] = pd.to_datetime(final_list, format='%d.%m.%Y %H:%M:%S.%f')
 
   dataframe = dataframe.drop(dataframe.iloc[:, :12], axis=1)
  
+  dataframe['step'] = range(1, len(dataframe) + 1)
   return dataframe
 
 def readLCR(filename):
@@ -42,9 +41,10 @@ def readLCR(filename):
     file = file.iloc[:, [0, 4, 6, 7, 8, 9]]
 
     file.iloc[:, 2] = file.iloc[:, 2].replace(months)
-    file['datetime'] = pd.to_datetime(file.iloc[:, 3]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, -1]+' '+ file.iloc[:, 4])
+    file['datetime'] = file.iloc[:, 5]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, 3]+' '+ file.iloc[:, 4]
     file = file.iloc[:, [0,1,-1]]
     file.columns=['var1', 'var2', 'datetime']
+    file['datetime'] = pd.to_datetime(file['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
     return file
 
 def readTemp(filename):
@@ -98,6 +98,20 @@ def readLAI(filename):
         temp = x.split('\t')
         temp_list.append(temp[:-1])
     frame = pd.DataFrame(temp_list, columns = ['var1', 'var2', 'var3'] )
+    
+    d_temp = (filename.split('\\')[-1]).split(' ')
+    date_part = d_temp[0].replace('.', '/')
+    time_part = d_temp[1][:-1].replace('.', ':')+'.0'
+    date_part = date_part[:-4] + date_part[-2:]
+    dttm = date_part + ' ' + time_part
+    start_datetime = datetime.datetime.strptime(dttm, '%d/%m/%y %H:%M:%S.%f')
+
+    tt = list()
+
+    for x in range (len(frame)):
+      tt.append( (start_datetime + x * datetime.timedelta(milliseconds=160)).strftime('%d.%m.%Y %H:%M:%S.%f') )
+
+    frame['date'] = tt
     return frame
 
 def readPress(filename):
@@ -126,13 +140,10 @@ def readPress(filename):
 def readSiglent(filename):
   with open(filename, 'r') as file:
     tempdata = file.read().split('\n')
-
-  check = False
   
   date_data = list()
   on_data = list()
   tempd = str()
-  tempo = str()
   
   for x in range(len(tempdata)):
     dt_data = tempdata[x].split(' ')
@@ -143,7 +154,7 @@ def readSiglent(filename):
         continue
       else:
         date_data.extend([tempd, (dt_data[0] + ' ' + dt_data[1])])
-        on_data.extend(['On', 'Off'])
+        on_data.extend([1, 0])
     
   return pd.DataFrame({'datetime': date_data, 'Power':on_data})
   
@@ -164,8 +175,8 @@ Siglent_path = os.path.join(current_path, 'Siglent', 'log.txt')
 #retriving files
 #data reading and cleaning up
 
-#emission_data = readEmission(emission_path)
-lcr_data = readLCR(lcr_path)
+emission_data = readEmission(emission_path)
+#lcr_data = readLCR(lcr_path)
 #fluke_data = readTemp(Fluke_path)
 #samples = optimTemp(fluke_data, 'Sample')
 #LAI24_data = readLAI(LAI24_path)
@@ -175,28 +186,18 @@ lcr_data = readLCR(lcr_path)
 #graphs section
 #vars
  
-
 fig = plt.figure(figsize=(13,6))
-x_e = list(lcr_data['datetime'])
-y_e1 = list(lcr_data['var1'])
-y_e2 = list(lcr_data['var2'])
+ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
 
-ax1 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
-ax2 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
-ax1.plot(x_e, y_e1, color='r')
-ax2.plot(x_e, y_e2, color='b')
 
-ax2.patch.set_alpha(0)
-ax1.spines['bottom'].set_position(('axes', -0.1))
-ax1.spines['left'].set_position(('axes', -0.1))
-ax1.spines['left'].set_color('r')
-ax2.spines['left'].set_position(('axes', 1.1))
-ax2.spines['left'].set_color('b')
-ax1.set_xticklabels([])
-#ax1.set_yticklabels([])
-#plt.gca().xaxis.set_major_locator(mdates.HourLocator())
-#plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
-#plt.setp(plt.gca().get_xticklabels(), rotation=60, ha="right")
+x_e = pd.to_datetime(emission_data['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
+y_e = emission_data['step']
 
+ax.plot(x_e, y_e, color='r')
+ax.xaxis.set_major_locator(MaxNLocator(10))
+
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+fig.autofmt_xdate()
 
 plt.show()
+
