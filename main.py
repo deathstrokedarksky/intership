@@ -9,12 +9,14 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1314, 771)
+        MainWindow.resize(1322, 771)
         font = QtGui.QFont()
         font.setPointSize(10)
         MainWindow.setFont(font)
@@ -40,6 +42,7 @@ class Ui_MainWindow(object):
 "}")
         self.plotter.setObjectName("plotter")
         self.frame = QtWidgets.QFrame(self.centralwidget)
+        
         self.frame.setGeometry(QtCore.QRect(50, 20, 1191, 601))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -49,8 +52,17 @@ class Ui_MainWindow(object):
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
+        # horiz layout
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.frame)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        #canvas
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas()
+        
+        self.horizontalLayout.addWidget(self.canvas)
+        
         self.datetimefrom = QtWidgets.QDateTimeEdit(self.centralwidget)
-        self.datetimefrom.setGeometry(QtCore.QRect(250, 650, 161, 32))
+        self.datetimefrom.setGeometry(QtCore.QRect(210, 650, 211, 32))
         self.datetimefrom.setMaximumDate(QtCore.QDate(2100, 12, 31))
         self.datetimefrom.setMinimumDate(QtCore.QDate(1970, 1, 1))
         self.datetimefrom.setMaximumTime(QtCore.QTime(23, 59, 59))
@@ -58,7 +70,7 @@ class Ui_MainWindow(object):
         self.datetimefrom.setTimeSpec(QtCore.Qt.LocalTime)
         self.datetimefrom.setObjectName("datetimefrom")
         self.labelfrom = QtWidgets.QLabel(self.centralwidget)
-        self.labelfrom.setGeometry(QtCore.QRect(170, 650, 70, 32))
+        self.labelfrom.setGeometry(QtCore.QRect(130, 650, 70, 32))
         self.labelfrom.setStyleSheet("QLabel{\n"
 "    background-color:rgb(0,200,96);\n"
 "    border: none;\n"
@@ -80,7 +92,7 @@ class Ui_MainWindow(object):
 "}")
         self.labelto.setObjectName("labelto")
         self.datetimeto = QtWidgets.QDateTimeEdit(self.centralwidget)
-        self.datetimeto.setGeometry(QtCore.QRect(510, 650, 161, 32))
+        self.datetimeto.setGeometry(QtCore.QRect(510, 650, 221, 32))
         self.datetimeto.setMaximumDate(QtCore.QDate(2100, 12, 31))
         self.datetimeto.setMinimumDate(QtCore.QDate(1970, 1, 1))
         self.datetimeto.setMaximumTime(QtCore.QTime(23, 59, 59))
@@ -89,7 +101,7 @@ class Ui_MainWindow(object):
         self.datetimeto.setObjectName("datetimeto")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1314, 29))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1322, 26))
         self.menubar.setObjectName("menubar")
         self.menuOpen_files = QtWidgets.QMenu(self.menubar)
         self.menuOpen_files.setObjectName("menuOpen_files")
@@ -99,6 +111,8 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionImport = QtWidgets.QAction(MainWindow)
+        self.actionImport.setObjectName("actionImport")
         self.menuOpen_files.addSeparator()
         self.menubar.addAction(self.menuOpen_files.menuAction())
         self.menubar.addAction(self.menuExport.menuAction())
@@ -110,12 +124,13 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.plotter.setText(_translate("MainWindow", "Plot graphs"))
-        self.datetimefrom.setDisplayFormat(_translate("MainWindow", "M/d/yyyy h:mm:ss"))
+        self.datetimefrom.setDisplayFormat(_translate("MainWindow", "M/d/yyyy h:mm:ss.ms"))
         self.labelfrom.setText(_translate("MainWindow", "From:"))
         self.labelto.setText(_translate("MainWindow", "To:"))
-        self.datetimeto.setDisplayFormat(_translate("MainWindow", "M/d/yyyy h:mm:ss"))
+        self.datetimeto.setDisplayFormat(_translate("MainWindow", "M/d/yyyy h:mm:ss.ms"))
         self.menuOpen_files.setTitle(_translate("MainWindow", "Import"))
         self.menuExport.setTitle(_translate("MainWindow", "Export"))
+        self.actionImport.setText(_translate("MainWindow", "Import"))
 
 
 if __name__ == "__main__":

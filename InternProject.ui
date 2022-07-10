@@ -77,9 +77,9 @@ QPushButton:pressed{
    <widget class="QDateTimeEdit" name="datetimefrom">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>210</x>
       <y>650</y>
-      <width>161</width>
+      <width>211</width>
       <height>32</height>
      </rect>
     </property>
@@ -105,7 +105,7 @@ QPushButton:pressed{
      </time>
     </property>
     <property name="displayFormat">
-     <string>M/d/yyyy h:mm:ss</string>
+     <string>M/d/yyyy h:mm:ss.ms</string>
     </property>
     <property name="calendarPopup">
      <bool>true</bool>
@@ -117,7 +117,7 @@ QPushButton:pressed{
    <widget class="QLabel" name="labelfrom">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>130</x>
       <y>650</y>
       <width>70</width>
       <height>32</height>
@@ -165,7 +165,7 @@ QPushButton:pressed{
      <rect>
       <x>510</x>
       <y>650</y>
-      <width>161</width>
+      <width>221</width>
       <height>32</height>
      </rect>
     </property>
@@ -191,7 +191,7 @@ QPushButton:pressed{
      </time>
     </property>
     <property name="displayFormat">
-     <string>M/d/yyyy h:mm:ss</string>
+     <string>M/d/yyyy h:mm:ss.ms</string>
     </property>
     <property name="calendarPopup">
      <bool>true</bool>

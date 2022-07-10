@@ -163,36 +163,40 @@ Siglent_path = os.path.join(current_path, 'Siglent', 'log.txt')
 
 #retriving files
 #data reading and cleaning up
-emission_data = readEmission(emission_path)
 
+#emission_data = readEmission(emission_path)
 lcr_data = readLCR(lcr_path)
+#fluke_data = readTemp(Fluke_path)
+#samples = optimTemp(fluke_data, 'Sample')
+#LAI24_data = readLAI(LAI24_path)
+#Press_data = readPress(Press_path)
+#Siglent_data = readSiglent(Siglent_path)
 
-#fig, ax = plt.subplots()
-#ax.plot(lcr_data.index, lcr_data['var1'], color = 'red')
-#ax2 = ax.twinx()
-#ax2.plot(lcr_data.index, lcr_data['var2'], color = 'blue')
-#plt.show()
+#graphs section
+#vars
+ 
+
+fig = plt.figure(figsize=(13,6))
+x_e = list(lcr_data['datetime'])
+y_e1 = list(lcr_data['var1'])
+y_e2 = list(lcr_data['var2'])
+
+ax1 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+ax2 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+ax1.plot(x_e, y_e1, color='r')
+ax2.plot(x_e, y_e2, color='b')
+
+ax2.patch.set_alpha(0)
+ax1.spines['bottom'].set_position(('axes', -0.1))
+ax1.spines['left'].set_position(('axes', -0.1))
+ax1.spines['left'].set_color('r')
+ax2.spines['left'].set_position(('axes', 1.1))
+ax2.spines['left'].set_color('b')
+ax1.set_xticklabels([])
+#ax1.set_yticklabels([])
+#plt.gca().xaxis.set_major_locator(mdates.HourLocator())
+#plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+#plt.setp(plt.gca().get_xticklabels(), rotation=60, ha="right")
 
 
-fluke_data = readTemp(Fluke_path)
-
-
-samples = optimTemp(fluke_data, 'Sample')
-maxes = optimTemp(fluke_data, 'Max')
-#mins = optimTemp(fluke_data, 'Min')
-
-
-fig, ax = plt.subplots()
-
-ax.plot(samples.iloc[:, 0], samples.iloc[:,1], color = 'red')
-ax2 = ax.twiny()
-ax2.plot(maxes.iloc[:,0], maxes.iloc[:,1], color = 'blue')
-#ax3 = ax.twinx()
-#ax3.plot(newdf['Start time'], newdf['Min'], color = 'green')
 plt.show()
-
-LAI24_data = readLAI(LAI24_path)
-
-Press_data = readPress(Press_path)
-
-Siglent_data = readSiglent(Siglent_path)
