@@ -367,7 +367,7 @@ def draw(array_x, array_y):
     axs[x].xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S"))
     axs[x].xaxis.set_minor_locator(AutoMinorLocator())
     axs[x].grid(axis='x')
-    axs[x].spines[['left', 'right', 'top', 'bottom']].set_linewidth(1.5)
+    axs[x].spines[['left', 'right', 'top', 'bottom']].set_linewidth(1.2)
     
     if x <= 1:
       axs[x].plot(array_x[x], array_y[x], alpha = 0.7, color='r')
@@ -376,29 +376,29 @@ def draw(array_x, array_y):
             
     elif x == 2:
       ax1 = axs[x].twinx()
-      axs[x].spines['left'].set(color = 'maroon', linewidth = 1.5 )
       ax1.spines['right'].set(color = 'b', linewidth = 1.5 )
+      ax1.spines['left'].set(color = 'magenta', linewidth = 1.5 )
       axs[x].yaxis.set_major_locator(MaxNLocator(5))
       ax1.yaxis.set_major_locator(MaxNLocator(5))
-      axs[x].plot(array_x[x], array_y[2], alpha = 0.7, color='maroon', linewidth = 1.5)
+      axs[x].plot(array_x[x], array_y[2], alpha = 0.7, color='magenta', linewidth = 1.5)
       ax1.plot(array_x[x], array_y[3], alpha = 0.7, color='b', linewidth = 1.5)
-      axs[x].tick_params(axis='y', color='maroon', width = 1.5)
+      axs[x].tick_params(axis='y', color='magenta', width = 1.5)
       ax1.tick_params(axis='y', color='b', width = 1.5)
         
     elif x == 3:
       ax1 = axs[x].twinx()
       ax2 = axs[x].twinx()
-      axs[x].spines['left'].set(color = 'purple', linewidth = 1.5 )
       ax1.spines['right'].set(color = 'orange', linewidth = 1.5 )
-      ax1.spines['right'].set(color = 'olive', linewidth = 1.5 )
+      ax2.spines['right'].set(color = 'olive', linewidth = 1.5 )
+      ax2.spines['left'].set(color = 'cyan', linewidth = 1.5 )
       ax2.spines['right'].set_position(('axes', 1.2))
       axs[x].yaxis.set_major_locator(MaxNLocator(5))
       ax1.yaxis.set_major_locator(MaxNLocator(5))
       ax2.yaxis.set_major_locator(MaxNLocator(5))
-      axs[x].plot(array_x[x], array_y[4], alpha = 0.7, color='purple', linewidth = 1.5)
+      axs[x].plot(array_x[x], array_y[4], alpha = 0.7, color='cyan', linewidth = 1.5)
       ax1.plot(array_x[x], array_y[5], alpha = 0.7, color='orange', linewidth = 1.5)
       ax2.plot(array_x[x], array_y[6], alpha = 0.7, color='olive', linewidth = 1.5)
-      axs[x].tick_params(axis='y', color='purple', width = 1.5)
+      axs[x].tick_params(axis='y', color='cyan', width = 1.5)
       ax1.tick_params(axis='y', color='orange', width = 1.5)
       ax2.tick_params(axis='y', color='olive', width = 1.5)
       
@@ -407,7 +407,7 @@ def draw(array_x, array_y):
       axs[x].step(array_x[x], array_y[7], alpha = 0.7, where = 'post', color='g', linewidth = 1.5)
       axs[x].set_yticks([0,1])
       axs[x].tick_params(axis='y', color='g', width = 1.5)
-  
+      
   axs[0].set_xlim(datetime_lims[0], datetime_lims[1])
   plt.subplots_adjust(right=0.75)                
   fig.autofmt_xdate()
