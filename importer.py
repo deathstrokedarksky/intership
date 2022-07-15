@@ -107,9 +107,9 @@ def readLAI(filename):
 
   df['datetime'] = tt
   #df[['var1', 'var2', 'var3']] = df[['var1', 'var2', 'var3']].apply(pd.to_numeric)
-  df['var1'] = round(df['var1'].astype(np.float64),15)
-  df['var3'] = round(df['var3'].astype(np.float64),15)
-  df['var2'] = round(df['var2'].astype(np.float64),15)
+  df['var1'] = df['var1'].astype(np.float64)
+  df['var3'] = df['var3'].astype(np.float64)
+  df['var2'] = df['var2'].astype(np.float64)
   return df
 
 def readPress(filename):
@@ -312,7 +312,7 @@ for x in range(4):
   
   df = Data_Frames[x]
   
-  df = df.set_index('datetime').resample('1S').mean().interpolate(method='time')
+  df = df.set_index('datetime').resample('1S').mean().interpolate()
   df.reset_index(inplace=True)
   if x == 0:
     Cleared_Emission_data = df
