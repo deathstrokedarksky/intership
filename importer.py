@@ -4,144 +4,138 @@ import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import (MaxNLocator, AutoMinorLocator)
 
-
-
-#functions to work with diffirerent types of files
-
-#read emiission files
+#functions to read files and all data in it
 def readEmission(filename):
-  dataframe = pd.DataFrame(np.reshape( (np.array(np.fromfile(filename, dtype='uint16'))), (-1,6144)))
-  dataframe.drop(dataframe.columns[3072:],axis=1)
+  df = pd.DataFrame(np.reshape( (np.array(np.fromfile(filename, dtype='uint16'))), (-1,6144)))
+  df.drop(df.columns[3072:],axis=1)
 
-  time = list(dataframe.iloc[:,3] + dataframe.iloc[:,4] * 65536)
+  time = list(df.iloc[:,3] + df.iloc[:,4] * 65536)
   
   delta_time = time[0]
-  begin_date = dataframe.iloc[0,8] * 1000000 + dataframe.iloc[0,9] * 1000 + dataframe.iloc[0,10]
+  begin_date = df.iloc[0,8] * 1000000 + df.iloc[0,9] * 1000 + df.iloc[0,10]
 
   final_list = list()
-  for d in range(len(dataframe)):
+  for d in range(len(df)):
     final_list.append(datetime.datetime.fromtimestamp(((time[d] -delta_time)/1000 + begin_date)).strftime('%d.%m.%Y %H:%M:%S.%f'))
   
-  dataframe['datetime'] = pd.to_datetime(final_list, format='%d.%m.%Y %H:%M:%S.%f')
+  df['datetime'] = pd.to_datetime(final_list, format='%d.%m.%Y %H:%M:%S.%f')
 
-  dataframe = dataframe.drop(dataframe.iloc[:, :12], axis=1)
+  df = df.drop(df.iloc[:, :12], axis=1)
  
-  dataframe['step'] = range(1, len(dataframe) + 1)
-  return dataframe
+  df['step'] = range(1, len(df) + 1)
+  
+  df.set_index('datetime')
+  return df
 
 def readLCR(filename):
-    with open(filename, 'r') as file:
-        data = ' '.join(file.read().split())
-    months = {"Jan":'1', "Feb":'2', "Mar":'3', "Apt":'4', "May":'5', "Jun":'6', "Jul":'7', "Aug":'8', "Sep":'9', "Oct":'10', "Nov":'11', "Dec":'12'}  
-    
-    temparray = np.reshape((np.array(data.split())), (-1, 10)) 
-    file = pd.DataFrame(temparray)
-    file = file.iloc[:, [0, 4, 6, 7, 8, 9]]
+  with open(filename, 'r') as file:
+      data = ' '.join(file.read().split())
+  months = {"Jan":'1', "Feb":'2', "Mar":'3', "Apt":'4', "May":'5', "Jun":'6',
+            "Jul":'7', "Aug":'8', "Sep":'9', "Oct":'10', "Nov":'11', "Dec":'12'}  
+  
+  temparray_x = np.reshape((np.array(data.split())), (-1, 10)) 
+  df = pd.DataFrame(temparray_x)
+  df = df.iloc[:, [0, 4, 6, 7, 8, 9]]
 
-    file.iloc[:, 2] = file.iloc[:, 2].replace(months)
-    
-    file['datetime'] = file.iloc[:, 5]+' '+ file.iloc[:, 2]+' '+ file.iloc[:, 3]+' '+ file.iloc[:, 4]+'.0'
-    file = file.iloc[:, [0,1,-1]]
-    file.columns=['var1', 'var2', 'datetime']
-    print(file)
-    file['datetime'] = pd.to_datetime(file['datetime'], format='%Y %m %d %H:%M:%S.%f')
-    return file
+  df.iloc[:, 2] = df.iloc[:, 2].replace(months)
+  
+  df['datetime'] = df.iloc[:, 5]+' '+ df.iloc[:, 2]+' '+ df.iloc[:, 3]+' '+ df.iloc[:, 4]+'.0'
+  df = df.iloc[:, [0,1,-1]]
+  df.columns=['var1', 'var2', 'datetime']
+  
+  df['datetime'] = pd.to_datetime(df['datetime'], format='%Y %m %d %H:%M:%S.%f')
+  df['var1'] = df['var1'].astype(np.float64)
+  df['var2'] = df['var2'].astype(np.float64)
+  #df[['var1', 'var2']] = df[['var1', 'var2']].apply(pd.to_numeric)
+  
+  return df
 
 def readTemp(filename):
-    with open(filename, 'rb') as file:
-        tempdata = file.read().decode('unicode_escape').replace('\r', '')
-    fdata =  tempdata.replace(' °C', '').split('\n')
-    fcolumns = fdata[9].split(';')
-    fcolumns[1],fcolumns[2] = fcolumns[2], fcolumns[1]
-    fdata = fdata[10:]
-    data = []
-    for x in fdata:
-        if not x:
-            break
-        part = x.split(';')
-        data.append(part)
-    df = pd.DataFrame(np.array(data[:-1]), columns = fcolumns)
-    df.iloc[:, [1]],df.iloc[:, [2]] = df.iloc[:, [2]], df.iloc[: ,[1]]
-    return df
+  with open(filename, 'rb') as df:
+    tempdata = df.read().decode('unicode_escape').replace('\r', '')
+  fdata =  tempdata.replace(' °C', '').split('\n')
+  col_temp = fdata[9].split(';')
+  fcolumns = col_temp[1:2]
+  fcolumns.append('datetime')
+  fdata = fdata[10:]
+  datas = []
 
-def optimTemp (df, col):
-
-  samp_col = [1,2]
-  max_col = [4,5]
-  min_col = [7,8]
-  findf = list()
-
-  if col == 'Sample':
-    n = samp_col
-  elif col == 'Max':
-    n = max_col
-  else:
-    n = min_col
-
-  for x in range(len(df.index)):
-    temp = df.iloc[x, n[1]]
-    if x==0 or x ==len(df.index):
-      findf.append(list(df.iloc[x, n]))
+  for x in fdata:
+    if not x:
+      break
+    part = x.split(';')
+    datas.append(part[1:3])
+  data = np.array(datas)
+  
+  temp = list()
+  for x in range(len(data)):
+    temp_t = data[x, 0]
+    if x==0 or x == len(data)-1:
+      temp.append((data[x]))
     else:
-      if temp != df.iloc[x-1, n[1]] or temp!= df.iloc[x+1, n[1]]:
-        findf.append(list(df.iloc[x, n]))
-
-  d = pd.DataFrame(findf, columns=(df.columns[n[0]], df.columns[n[1]]))
-  return d
+      if temp_t != data[x-1, 0] or temp_t!= data[x+1, 0]:
+        temp.append((data[x]))
+  
+  df = pd.DataFrame(temp, columns=fcolumns)
+  df['Sample'] = pd.to_numeric(df['Sample'])
+  df['datetime'] = pd.to_datetime(df['datetime'], format='%d.%m.%y %H:%M:%S.%f')
+  
+  return df
 
 def readLAI(filename):
-    with open(filename, 'r') as file:
-        fdata = file.read().split('\n') 
-    temp_list = list()
-    for x in fdata:
-      if x:
-        temp = x.split('\t')
-        temp_list.append(temp[:-1])
-    frame = pd.DataFrame(temp_list, columns = ['var1', 'var2', 'var3'] )
-    
-    d_temp = (filename.split('\\')[-1]).split(' ')
-    date_part = d_temp[0].replace('.', '/')
-    time_part = d_temp[1][:-1].replace('.', ':')+'.0'
-    date_part = date_part[:-4] + date_part[-2:]
-    dttm = date_part + ' ' + time_part
-    start_datetime = datetime.datetime.strptime(dttm, '%d/%m/%y %H:%M:%S.%f')
+  with open(filename, 'r') as df:
+      fdata = df.read().split('\n') 
+  temp_list = list()
+  for x in fdata:
+    if x:
+      temp = x.split('\t')
+      temp_list.append(temp[:-1])
+  df = pd.DataFrame(temp_list, columns = ['var1', 'var2', 'var3'] )
+  
+  d_temp = (filename.split('\\')[-1]).split(' ')
+  date_part = d_temp[0]
+  time_part = d_temp[1] + '0'
+  dttm = date_part + ' ' + time_part
+  start_datetime = datetime.datetime.strptime(dttm, '%d.%m.%Y %H.%M.%S.%f')
 
-    tt = list()
+  tt = list()
 
-    for x in range (len(frame)):
-      tt.append( (start_datetime + x * datetime.timedelta(milliseconds=160)).strftime('%d.%m.%Y %H:%M:%S.%f') )
+  for x in range (len(df)):
+    tt.append( (start_datetime + x * datetime.timedelta(milliseconds=160)) )
 
-    frame['date'] = tt
-    return frame
+  df['datetime'] = tt
+  #df[['var1', 'var2', 'var3']] = df[['var1', 'var2', 'var3']].apply(pd.to_numeric)
+  df['var1'] = round(df['var1'].astype(np.float64),15)
+  df['var3'] = round(df['var3'].astype(np.float64),15)
+  df['var2'] = round(df['var2'].astype(np.float64),15)
+  return df
 
 def readPress(filename):
-    with open(filename, 'r') as file:
-        fdata = file.read()
-    tempdata = fdata.split('\n')
-    data = list()
+  with open(filename, 'r') as df:
+      fdata = df.read()
+  tempdata = fdata.split('\n')
     
-    temparray = list()
+  temparray_x = list()
 
-    for x in tempdata:
-      if x:
-        temparray.append(x)
+  for x in tempdata:
+    if x:
+      temparray_x.append(x)
 
-    beg = 0
-    end = 0
-    data = list()
-    for i in range(len(temparray)):
-      if 'Start' in temparray[i]:
-        beg = i
-      if 'Stop' in temparray[i]:
-        data.extend(temparray[beg:i+1])
-    return data
-#steps and frequency
+  beg = 0
+  data = list()
+  for i in range(len(temparray_x)):
+    if 'Start' in temparray_x[i]:
+      beg = i
+    if 'Stop' in temparray_x[i]:
+      data.extend(temparray_x[beg:i+1])
+  return data
+  #data not used yet
 
 def readSiglent(filename):
-  with open(filename, 'r') as file:
-    tempdata = file.read().split('\n')
+  with open(filename, 'r') as df:
+    tempdata = df.read().split('\n')
   
   date_data = list()
   on_data = list()
@@ -150,23 +144,23 @@ def readSiglent(filename):
   for x in range(len(tempdata)):
     dt_data = tempdata[x].split(' ')
     if tempdata[x][-2:]=='on':
-      tempd = (dt_data[0] + ' ' + dt_data[1])
+      tempd = (dt_data[0] + ' ' + dt_data[1] + '.0')
     if tempdata[x][-2:]=='ff':
       if on_data == [] and not tempd:
         continue
       else:
-        date_data.extend([tempd, (dt_data[0] + ' ' + dt_data[1])])
+        date_data.extend([tempd, (dt_data[0] + ' ' + dt_data[1] + '.0')])
         on_data.extend([1, 0])
-    
-  return pd.DataFrame({'datetime': date_data, 'Power':on_data})
+  df = pd.DataFrame({'datetime': date_data, 'Power':on_data})
   
+  df['datetime'] = pd.to_datetime(df['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
+  return df
+#end of functions
 
-months = {"JAN":1, "FEB":2, "MAR":3, "APR":4, "MAY":5, "JUN":6, "JUL":7, "AUG":8, "SEP":9, "OCT":10, "NOV":11, "DEC":12}
-LCRvalues = ["var1", "var2", "var3", "var4", "var5", "month", "day", "time", "year"]
-
+#section for sample data
 current_path = os.path.join((os.path.dirname(__file__)), 'Исходные данные', 'Пресс' )
 
-#pathes for the files
+  #pathes for the files
 emission_path = os.path.join(current_path, 'AE_DEF', '010622.001')
 lcr_path = os.path.join(current_path, 'AKTAKOM', 'AM3001-100.txt')
 Fluke_path =os.path.join(current_path, 'Temperature 01.06.22.csv')
@@ -174,57 +168,271 @@ LAI24_path = os.path.join(current_path, 'La_i_24', '01.06.2022 13.59.12. 6.25Hz.
 Press_path = os.path.join(current_path, 'log.log')
 Siglent_path = os.path.join(current_path, 'Siglent', 'log.txt')
 
-#retriving files
-#data reading and cleaning up
-
-emission_data = readEmission(emission_path)
-lcr_data = readLCR(lcr_path)
-fluke_data = readTemp(Fluke_path)
-#samples = optimTemp(fluke_data, 'Sample')
-#LAI24_data = readLAI(LAI24_path)
-#Press_data = readPress(Press_path)
-#Siglent_data = readSiglent(Siglent_path)
+  #retriving files
+Emission_data = readEmission(emission_path)
+LCR_data = readLCR(lcr_path)
+Tempr_data = readTemp(Fluke_path)
+LAI24_data = readLAI(LAI24_path)
+Press_data = readPress(Press_path)
+Siglent_data = readSiglent(Siglent_path)
+#end of reading data
 
 #graphs section
-#vars
- 
-def draw_emi():
+  
+  #functions for separate plotting, df to pass appropriate dataframe
+def draw_Emi(df):
   fig = plt.figure(figsize=(13,6))
   ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
 
-
-  x_e = pd.to_datetime(emission_data['datetime'], format='%d.%m.%Y %H:%M:%S.%f')
-  y_e = emission_data['step']
+  x_e = df['datetime']
+  y_e = df['step']
 
   ax.plot(x_e, y_e, color='r')
   ax.xaxis.set_major_locator(MaxNLocator(10))
-
   ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  ax.grid(axis='both')
   fig.autofmt_xdate()
   plt.show()
+  
+def draw_Tempr(df):
+  fig = plt.figure(figsize=(18,10))
+  ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
 
-fig = plt.figure(figsize=(18,10))
-ax1 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
-
-
-x_lcr = lcr_data['datetime']
-y_lcr1 = lcr_data['var1']
-y_lcr2 = lcr_data['var2']
-
-ax1.plot(x_lcr, y_lcr1, color='r')
-ax1.xaxis.set_major_locator(MaxNLocator(10))
-ax1.yaxis.set_major_locator(MaxNLocator(10))
-ax1.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
-
-ax2 = ax1.twinx()
-ax2.plot(x_lcr, y_lcr2, color='b')
-
-ax2.yaxis.set_major_locator(MaxNLocator(10))
+  x = df['Start Time']
+  y = df['Sample']
 
 
+  ax.plot(x, y, color='r')
+  ax.xaxis.set_major_locator(MaxNLocator(10))
+  ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  ax.xaxis.set_minor_locator(AutoMinorLocator())
+  ax.grid(axis='x')
+  fig.autofmt_xdate()
+
+  #plt.get_current_fig_manager().window.showMaximized()
+  plt.show()
+
+def draw_LCR(df):
+  fig = plt.figure(figsize=(18,10))
+  ax1 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+
+
+  x_lcr = df['datetime']
+  y_lcr1 = df['var1']
+  y_lcr2 = df['var2']
+
+  ax1.plot(x_lcr, y_lcr1, color='r')
+  ax1.yaxis.set_major_locator(MaxNLocator(10))
+  ax1.xaxis.set_major_locator(MaxNLocator(10))
+  ax1.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  ax1.xaxis.set_minor_locator(AutoMinorLocator())
+  ax1.grid(axis='x')
+  fig.autofmt_xdate()
+
+
+  ax2 = ax1.twinx()
+  ax2.plot(x_lcr, y_lcr2, color='b')
+
+  ax2.yaxis.set_major_locator(MaxNLocator(10))
+
+  #plt.get_current_fig_manager().window.showMaximized()
+  plt.show()
+
+def draw_LAI(df):
+  fig = plt.figure(figsize=(18,10))
+  ax1 = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+
+  x = df['datetime']
+  y1 = df['var1']
+  y2 = df['var2']
+  y3 = df['var3']
+
+  ax1.plot(x, y1, color='r')
+  ax1.yaxis.set_major_locator(MaxNLocator(10))
+  ax1.xaxis.set_major_locator(MaxNLocator(10))
+  ax1.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  ax1.xaxis.set_minor_locator(AutoMinorLocator())
+  ax1.grid(axis='x')
+  fig.autofmt_xdate()
+
+  ax2 = ax1.twinx()
+  ax3 = ax1.twinx()
+  ax2.plot(x, y2, color='b')
+  ax2.yaxis.set_major_locator(MaxNLocator(10))
+  ax2.xaxis.set_major_locator(MaxNLocator(10))
+  ax2.spines['left'].set_position(('axes', 1))
+  ax2.yaxis.tick_right()
+  
+  ax3.plot(x, y3, color='g')
+  ax3.yaxis.set_major_locator(MaxNLocator(10))
+  ax3.xaxis.set_major_locator(MaxNLocator(10))
+  ax3.spines.right.set_position(("axes", 1.2))
+  ax3.yaxis.tick_right()
+  
+  #plt.get_current_fig_manager().window.showMaximized()
+  plt.show()
+
+def draw_Siglent(df): 
+  fig = plt.figure(figsize=(14,6))
+  ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+  ax.step(df['datetime'],df['Power'], where = 'post', color='r')
+  ax.set_yticks([0,1])
+  ax.xaxis.set_major_locator(MaxNLocator(10))
+  ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+  ax.grid(axis='x')
+  fig.autofmt_xdate()
+  plt.show()
+  #end of separate plot functions
+ 
+#gathering all read data for further work  
+Data_Frames = [Emission_data, Tempr_data, LCR_data, LAI24_data, Siglent_data] 
+
+  #arrays to use in main plotting
+xs_not_interpolated = [Emission_data['datetime'], Tempr_data['datetime'], LCR_data['datetime'],
+      LAI24_data['datetime'], Siglent_data['datetime']]
+ys_not_interpolated = [Emission_data['step'], Tempr_data['Sample'], 
+      LCR_data['var1'], LCR_data['var2'], 
+        LAI24_data['var1'],LAI24_data['var2'],LAI24_data['var3'], Siglent_data['Power']]
+
+#function to find min max times for overlap data, array_x is dataframes of
+def cut_datetime(array_x):
+  min_datetime = min(array_x[0])
+  max_datetime = max(array_x[0])
+
+  for x in range(1,5):
+    if min_datetime < min(array_x[x]):
+      min_datetime = min(array_x[x])
+    if max_datetime > max(array_x[x]):
+      max_datetime = max(array_x[x])
+  return [min_datetime, max_datetime]    
+#end of function
+
+#section for interpolating data  
+for x in range(4):
+  
+  df = Data_Frames[x]
+  
+  df = df.set_index('datetime').resample('1S').mean().interpolate(method='time')
+  df.reset_index(inplace=True)
+  if x == 0:
+    Cleared_Emission_data = df
+  if x == 1:
+    Cleared_Tempr_data = df
+  if x == 2:
+    Cleared_LCR_data = df
+  if x == 3:
+    Cleared_LAI24_data = df
+    
+Cleared_Siglent_data = Data_Frames[4]
+#finish of interpolating
+
+#cuting data
+datetime_lim_inter = cut_datetime([Cleared_Emission_data['datetime'], Cleared_Tempr_data['datetime'], Cleared_LCR_data['datetime'],
+      Cleared_LAI24_data['datetime'], Siglent_data['datetime']])
+min_dt = datetime_lim_inter[0].to_pydatetime()
+max_dt = datetime_lim_inter[1].to_pydatetime()
+
+Cleared_Data_Frames = [Cleared_Emission_data, Cleared_Tempr_data, Cleared_LCR_data, Cleared_LAI24_data]
+
+for x in range(4):
+  df = Cleared_Data_Frames[x]
+  df = df[ (df['datetime'] >= min_dt )& (df['datetime'] <= max_dt)]
+  if x == 0:
+    Cleared_Emission_data = df
+  if x == 1:
+    Cleared_Tempr_data = df
+  if x == 2:
+    Cleared_LCR_data = df
+  if x == 3:
+    Cleared_LAI24_data = df
+#data cut by dates
+
+#lists of interpolated dataframes axises
+xs_interpolated = [Cleared_Emission_data['datetime'], Cleared_Tempr_data['datetime'], Cleared_LCR_data['datetime'],
+      Cleared_LAI24_data['datetime'], Siglent_data['datetime']]
+ys_interpolated = [Cleared_Emission_data['step'], Cleared_Tempr_data['Sample'], 
+      Cleared_LCR_data['var1'], Cleared_LCR_data['var2'], 
+        Cleared_LAI24_data['var1'],Cleared_LAI24_data['var2'],Cleared_LAI24_data['var3'], Cleared_Siglent_data['Power']]
+
+#main plot function, array_x: datetimes list of dataframes, array_y list of other data of dataframes 
+def draw(array_x, array_y):
+  datetime_lims = cut_datetime(array_x)
+  
+  axs = [None]*5 
+  fig, axs = plt.subplots(5, 1, figsize = (16,9), sharex=True)
+
+  for x in range(5):
+    axs[x].yaxis.set_major_locator(MaxNLocator(5))
+    axs[x].xaxis.set_major_locator(MaxNLocator(10))
+    axs[x].xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S"))
+    axs[x].xaxis.set_minor_locator(AutoMinorLocator())
+    axs[x].grid(axis='x')
+    axs[x].spines[['left', 'right', 'top', 'bottom']].set_linewidth(1.5)
+    
+    if x <= 1:
+      axs[x].plot(array_x[x], array_y[x], alpha = 0.7, color='r')
+      axs[x].spines['left'].set(color = 'r', linewidth = 1.5 )
+      axs[x].tick_params(axis='y', color='r', width = 1.5)
+            
+    elif x == 2:
+      ax1 = axs[x].twinx()
+      axs[x].yaxis.set_major_locator(MaxNLocator(5))
+      ax1.yaxis.set_major_locator(MaxNLocator(5))
+      axs[x].plot(array_x[x], array_y[2], alpha = 0.7, color='maroon', linewidth = 1.5)
+      ax1.plot(array_x[x], array_y[3], alpha = 0.7, color='b', linewidth = 1.5)
+      axs[x].tick_params(axis='y', color='maroon', width = 1.5)
+      ax1.tick_params(axis='y', color='b', width = 1.5)
+        
+    elif x == 3:
+      ax1 = axs[x].twinx()
+      ax2 = axs[x].twinx()
+      ax2.spines['right'].set_position(('axes', 1.2))
+      axs[x].yaxis.set_major_locator(MaxNLocator(5))
+      ax1.yaxis.set_major_locator(MaxNLocator(5))
+      ax2.yaxis.set_major_locator(MaxNLocator(5))
+      axs[x].plot(array_x[x], array_y[4], alpha = 0.7, color='purple', linewidth = 1.5)
+      ax1.plot(array_x[x], array_y[5], alpha = 0.7, color='orange', linewidth = 1.5)
+      ax2.plot(array_x[x], array_y[6], alpha = 0.7, color='olive', linewidth = 1.5)
+      axs[x].tick_params(axis='y', color='purple', width = 1.5)
+      ax1.tick_params(axis='y', color='orange', width = 1.5)
+      ax2.tick_params(axis='y', color='olive', width = 1.5)
+      
+    elif x == 4:
+      axs[x].step(array_x[x], array_y[7], alpha = 0.7, where = 'post', color='g', linewidth = 1.5)
+      axs[x].set_yticks([0,1])
+      axs[x].tick_params(axis='y', color='g', width = 1.5)
+  
+  axs[0].set_xlim(datetime_lims[0], datetime_lims[1])
+  plt.subplots_adjust(right=0.75)                
+  fig.autofmt_xdate()
+  
+  plt.show()
+  
+"""
+clean = pd.DataFrame(Emission_data)
+clean = clean.set_index('datetime').resample('1S').mean()
+
+
+fig = plt.figure(figsize=(13,6))
+ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
+
+x_e = Emission_data['datetime']
+y_e = Emission_data['step']
+y_c = clean['step']
+
+
+ax.xaxis.set_major_locator(MaxNLocator(10))
+ax.yaxis.set_major_locator(MaxNLocator(10))
+#ax.plot(x_e, y_e, color='r', alpha = 0.6)
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
+ax.grid(axis='x')
 fig.autofmt_xdate()
+clean['step'].interpolate(method='linear').plot()
 
-#plt.get_current_fig_manager().window.showMaximized()
+#ax1 = ax.twinx()
+#ax1.yaxis.set_major_locator(MaxNLocator(10))
+#ax1.plot(y_c, color='b', alpha=0.6) 
+
 plt.show()
-
-
+"""
+draw(xs_interpolated, ys_interpolated)
