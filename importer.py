@@ -376,6 +376,8 @@ def draw(array_x, array_y):
             
     elif x == 2:
       ax1 = axs[x].twinx()
+      axs[x].spines['left'].set(color = 'maroon', linewidth = 1.5 )
+      ax1.spines['right'].set(color = 'b', linewidth = 1.5 )
       axs[x].yaxis.set_major_locator(MaxNLocator(5))
       ax1.yaxis.set_major_locator(MaxNLocator(5))
       axs[x].plot(array_x[x], array_y[2], alpha = 0.7, color='maroon', linewidth = 1.5)
@@ -386,6 +388,9 @@ def draw(array_x, array_y):
     elif x == 3:
       ax1 = axs[x].twinx()
       ax2 = axs[x].twinx()
+      axs[x].spines['left'].set(color = 'purple', linewidth = 1.5 )
+      ax1.spines['right'].set(color = 'orange', linewidth = 1.5 )
+      ax1.spines['right'].set(color = 'olive', linewidth = 1.5 )
       ax2.spines['right'].set_position(('axes', 1.2))
       axs[x].yaxis.set_major_locator(MaxNLocator(5))
       ax1.yaxis.set_major_locator(MaxNLocator(5))
@@ -398,6 +403,7 @@ def draw(array_x, array_y):
       ax2.tick_params(axis='y', color='olive', width = 1.5)
       
     elif x == 4:
+      axs[x].spines['left'].set(color = 'g', linewidth = 1.5 )
       axs[x].step(array_x[x], array_y[7], alpha = 0.7, where = 'post', color='g', linewidth = 1.5)
       axs[x].set_yticks([0,1])
       axs[x].tick_params(axis='y', color='g', width = 1.5)
