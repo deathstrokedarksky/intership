@@ -390,15 +390,15 @@ def draw(array_x, array_y):
       ax2 = axs[x].twinx()
       ax1.spines['right'].set(color = 'orange', linewidth = 1.5 )
       ax2.spines['right'].set(color = 'olive', linewidth = 1.5 )
-      ax2.spines['left'].set(color = 'cyan', linewidth = 1.5 )
+      ax2.spines['left'].set(color = 'lime', linewidth = 1.5 )
       ax2.spines['right'].set_position(('axes', 1.2))
       axs[x].yaxis.set_major_locator(MaxNLocator(5))
       ax1.yaxis.set_major_locator(MaxNLocator(5))
       ax2.yaxis.set_major_locator(MaxNLocator(5))
-      axs[x].plot(array_x[x], array_y[4], alpha = 0.7, color='cyan', linewidth = 1.5)
+      axs[x].plot(array_x[x], array_y[4], alpha = 0.7, color='lime', linewidth = 1.5)
       ax1.plot(array_x[x], array_y[5], alpha = 0.7, color='orange', linewidth = 1.5)
       ax2.plot(array_x[x], array_y[6], alpha = 0.7, color='olive', linewidth = 1.5)
-      axs[x].tick_params(axis='y', color='cyan', width = 1.5)
+      axs[x].tick_params(axis='y', color='lime', width = 1.5)
       ax1.tick_params(axis='y', color='orange', width = 1.5)
       ax2.tick_params(axis='y', color='olive', width = 1.5)
       
@@ -413,32 +413,5 @@ def draw(array_x, array_y):
   fig.autofmt_xdate()
   
   plt.show()
-  
-"""
-clean = pd.DataFrame(Emission_data)
-clean = clean.set_index('datetime').resample('1S').mean()
 
-
-fig = plt.figure(figsize=(13,6))
-ax = fig.add_axes([0.2, 0.2, 0.5, 0.7])
-
-x_e = Emission_data['datetime']
-y_e = Emission_data['step']
-y_c = clean['step']
-
-
-ax.xaxis.set_major_locator(MaxNLocator(10))
-ax.yaxis.set_major_locator(MaxNLocator(10))
-#ax.plot(x_e, y_e, color='r', alpha = 0.6)
-ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
-ax.grid(axis='x')
-fig.autofmt_xdate()
-clean['step'].interpolate(method='linear').plot()
-
-#ax1 = ax.twinx()
-#ax1.yaxis.set_major_locator(MaxNLocator(10))
-#ax1.plot(y_c, color='b', alpha=0.6) 
-
-plt.show()
-"""
 draw(xs_interpolated, ys_interpolated)
