@@ -253,7 +253,6 @@ class MainWindow(QtWidgets.QMainWindow):
         Cleared_LAI24_data.to_csv(LAI24_path[:-4] + '_cleared.txt', index=False)
         Siglent_data.to_csv(Siglent_path[:-4] + '_cleared.txt', index=False)
             
-             
 #functions to upload data to respectable dataframes and into edit lines to visualise path    
     def br1(self):
         global last_path, Emission_path, Emission_data

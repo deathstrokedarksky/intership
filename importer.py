@@ -312,7 +312,7 @@ for x in range(4):
   
   df = Data_Frames[x]
   
-  df = df.set_index('datetime').resample('1S').mean().interpolate()
+  df = df.set_index('datetime').resample('0.5S').mean().interpolate()
   df.reset_index(inplace=True)
   if x == 0:
     Cleared_Emission_data = df
@@ -364,7 +364,7 @@ def draw(array_x, array_y):
   for x in range(5):
     axs[x].yaxis.set_major_locator(MaxNLocator(5))
     axs[x].xaxis.set_major_locator(MaxNLocator(10))
-    axs[x].xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S"))
+    axs[x].xaxis.set_major_formatter(mdates.DateFormatter("%d.%m.%Y %H:%M:%S.%f"))
     axs[x].xaxis.set_minor_locator(AutoMinorLocator())
     axs[x].grid(axis='x')
     axs[x].spines[['left', 'right', 'top', 'bottom']].set_linewidth(1.2)
@@ -429,4 +429,11 @@ def draw(array_x, array_y):
   
   plt.show()
 
-draw(xs_interpolated, ys_interpolated)
+print(Cleared_Emission_data.head())
+print(Cleared_Tempr_data.head())
+print(Cleared_LAI24_data.head())
+print(Siglent_data.head())
+print(Cleared_LCR_data.head())
+
+
+#draw(xs_interpolated, ys_interpolated)

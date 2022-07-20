@@ -5,4 +5,4 @@ Main goals: <br />
 *Synchronise all incoming data from the equipment.* Done.<br />
 *Clean all gathered data before and after experiments.*  Done.<br />
 *Visualise and export all results.*  Done.<br />
-*Create GUI for automatisation of these processes*
+*Create GUI for automatisation of these processes* Done.

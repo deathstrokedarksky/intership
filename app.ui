@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1274</width>
+    <height>253</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Приложение</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>1241</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelfrom">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>Начало:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDateTimeEdit" name="begin">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="maximumDate">
+        <date>
+         <year>2100</year>
+         <month>12</month>
+         <day>31</day>
+        </date>
+       </property>
+       <property name="minimumDate">
+        <date>
+         <year>1970</year>
+         <month>1</month>
+         <day>1</day>
+        </date>
+       </property>
+       <property name="maximumTime">
+        <time>
+         <hour>23</hour>
+         <minute>59</minute>
+         <second>59</second>
+        </time>
+       </property>
+       <property name="displayFormat">
+        <string>ss:mm:HH yyyy.MM.dd</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::LocalTime</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="labelto">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>Конец:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3" colspan="2">
+      <widget class="QDateTimeEdit" name="end">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="maximumDate">
+        <date>
+         <year>2100</year>
+         <month>12</month>
+         <day>31</day>
+        </date>
+       </property>
+       <property name="minimumDate">
+        <date>
+         <year>1970</year>
+         <month>1</month>
+         <day>1</day>
+        </date>
+       </property>
+       <property name="maximumTime">
+        <time>
+         <hour>23</hour>
+         <minute>59</minute>
+         <second>59</second>
+        </time>
+       </property>
+       <property name="displayFormat">
+        <string>ss:mm:HH yyyy.MM.dd</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::LocalTime</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5" colspan="2">
+      <widget class="QPushButton" name="plotter">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Построить графики</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="7" colspan="2">
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>Учитывать ограничение</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelfrom_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>Эмиссия:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="line_emi"/>
+     </item>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="load_emi">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Импорт</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4" colspan="2">
+      <widget class="QLabel" name="labelfrom_5">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>LA-I 24 Датчик:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6" colspan="2">
+      <widget class="QLineEdit" name="line_lai"/>
+     </item>
+     <item row="1" column="8">
+      <widget class="QPushButton" name="load_lai">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Импорт</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelfrom_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>LCR Датчик:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QLineEdit" name="line_lcr"/>
+     </item>
+     <item row="2" column="3">
+      <widget class="QPushButton" name="load_lcr">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Импорт</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4" colspan="2">
+      <widget class="QLabel" name="labelfrom_6">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>Генератор:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="6" colspan="2">
+      <widget class="QLineEdit" name="line_gen"/>
+     </item>
+     <item row="2" column="8">
+      <widget class="QPushButton" name="load_gen">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Импорт</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelfrom_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>FLUKE Датчик:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="2">
+      <widget class="QLineEdit" name="line_fluke"/>
+     </item>
+     <item row="3" column="3">
+      <widget class="QPushButton" name="load_fluke">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Импорт</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelfrom_7">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>Начало:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDateTimeEdit" name="begincut">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="maximumDate">
+        <date>
+         <year>2100</year>
+         <month>12</month>
+         <day>31</day>
+        </date>
+       </property>
+       <property name="minimumDate">
+        <date>
+         <year>1970</year>
+         <month>1</month>
+         <day>1</day>
+        </date>
+       </property>
+       <property name="maximumTime">
+        <time>
+         <hour>23</hour>
+         <minute>59</minute>
+         <second>59</second>
+        </time>
+       </property>
+       <property name="displayFormat">
+        <string>ss:mm:HH yyyy.MM.dd</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::LocalTime</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QLabel" name="labelto_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	font:75 14pt;
+}</string>
+       </property>
+       <property name="text">
+        <string>Конец:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3" colspan="2">
+      <widget class="QDateTimeEdit" name="endcut">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="maximumDate">
+        <date>
+         <year>2100</year>
+         <month>12</month>
+         <day>31</day>
+        </date>
+       </property>
+       <property name="minimumDate">
+        <date>
+         <year>1970</year>
+         <month>1</month>
+         <day>1</day>
+        </date>
+       </property>
+       <property name="maximumTime">
+        <time>
+         <hour>23</hour>
+         <minute>59</minute>
+         <second>59</second>
+        </time>
+       </property>
+       <property name="displayFormat">
+        <string>ss:mm:HH yyyy.MM.dd</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::LocalTime</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="5" colspan="2">
+      <widget class="QPushButton" name="cutter">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Обрезать данные</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="7" colspan="2">
+      <widget class="QPushButton" name="exporter">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	background-color:rgb(34, 136, 16);
+	border: none;
+	padding: 5px;
+	color:rgb(205,230,255);
+	border-radius: 5px;
+	font:75 14pt;
+}
+
+QPushButton:hover{
+	background-color:rgb(34, 96, 56);	
+}
+QPushButton:pressed{
+	background-color:rgb(54, 146, 56);	
+}</string>
+       </property>
+       <property name="text">
+        <string>Экспортировать данные</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1274</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
