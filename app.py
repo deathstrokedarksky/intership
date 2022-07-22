@@ -174,7 +174,8 @@ class Canvas(FigureCanvas):
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        loadUi('app.ui', self) #app.ui should use absolute path for building
+        
+        loadUi(os.path.join(os.getcwd(), 'app.ui'), self) #app.ui should use absolute path for building
         
         #buttons that calls functions to load data, interpolate and plot
         self.load_emi.clicked.connect(self.br1)

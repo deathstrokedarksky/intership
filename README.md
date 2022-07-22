@@ -1,8 +1,9 @@
-# Data processing
-The project for data automatisation for internship in  Research Station of the Russian Academy of Sciences in Bishkek.
+#  Приложение для работы с данными пресса.
 
-Main goals: <br />
-*Synchronise all incoming data from the equipment.* Done.<br />
-*Clean all gathered data before and after experiments.*  Done.<br />
-*Visualise and export all results.*  Done.<br />
-*Create GUI for automatisation of these processes* Done.
+Основная задача приложения - автоматизированные импорт, визуализация и экспорт данных.
+
+Для работы в первую очередь нужно импортировать соотвествующие файлы данных в интерфейсе.<br>
+Для визуализации графиков используется первая строка с виджетами:<br>
+    Кнопка "Построить графики" - для построения графиков с интерфейсом в новом окне. <br>
+    Виджеты даты-времени для для ограничения графиков, для их применения нужно нажать виджет галочки "Применить органичения", по умолчанию графики ограниченны автоматически. <br>
+Для обрезки и экспорта данных соответсвующие кнопки. Виджеты даты-времени для установки обрезки данных. По умолчанию данные во время экспорта обрезаны автоматически. <br> 
